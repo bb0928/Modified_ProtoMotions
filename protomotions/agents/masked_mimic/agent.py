@@ -22,6 +22,11 @@ log = logging.getLogger(__name__)
 
 class MaskedMimic(PPO):
     env: MimicEnv
+    """
+    训练一个生成式策略，不仅能模仿一个已有专家策略，还能学习到专家策略的潜在分布。
+    使得agent在面对相似但没见过的状态时，能生成多样且合理的动作，实现补全式模仿
+    目标：训练一个maskedmimic智能体，使其动作尽可能地接近一个预训练好的expert model
+    """
 
     # -----------------------------
     # Initialization and Setup
@@ -220,9 +225,9 @@ class MaskedMimic(PPO):
                             self.experience_buffer.update_data(key, step, obs[key])
 
                     # At training we use the encoder to obtain less-noisy latent codes
-                    action = self.model.act(obs, with_encoder=True)
+                    action = self.model.act(obs, with_encoder=True) # 使用当前策略在环境中探索，with_encoder=True代表收集数据时利用encoder生成质量更高的动作
 
-                    expert_action = self.expert_model.act(obs)
+                    expert_action = self.expert_model.act(obs) # 对于当前状态obs，同时请求专家模型给出此时应该执行的完美动作
                     self.experience_buffer.update_data(
                         "expert_actions", step, expert_action
                     )

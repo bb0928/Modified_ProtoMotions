@@ -3,6 +3,12 @@ from torch import nn
 from hydra.utils import instantiate
 from protomotions.agents.common.mlp import MultiHeadedMLP
 
+"""
+maskedmimic的核心架构，包含以下三个部分：
+1、先验网络_prior：基于当前的obs，用于生成动作的先验分布z
+2、编码器网络_encoder：基于当前的obs，用于生成动作的编码分布z
+3、主干网络_trunk：将先验分布z作为输入，生成最终的动作输出
+"""
 
 class VaeModule(nn.Module):
     def __init__(self, config):
